@@ -58,12 +58,12 @@ tableTexture.wrapS = THREE.RepeatWrapping;
 tableTexture.wrapT = THREE.RepeatWrapping;
 tableTexture.repeat.set(1, 1);
 tableTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-const tableTopMaterial = new THREE.MeshStandardMaterial({
-    map: new THREE.TextureLoader().load(tableTextures[tableTextureNo]),
+const tableMaterial = new THREE.MeshStandardMaterial({
+    map: tableTexture,
 });
 
 let tableTop = new THREE.BoxGeometry(24, 0.4, 14);
-tableTop = new THREE.Mesh(tableTop, tableTopMaterial);
+tableTop = new THREE.Mesh(tableTop, tableMaterial);
 tableTop.position.set(0, 10, 0);
 tableTop.castShadow = true;
 scene.add(tableTop);
@@ -71,57 +71,87 @@ scene.add(tableTop);
 
 
 // // -------Table Legs--------
-let tableLegTexture = new THREE.TextureLoader().load(tableTextures[tableTextureNo]);
-tableLegTexture.wrapS = THREE.RepeatWrapping;
-tableLegTexture.wrapT = THREE.RepeatWrapping;
-tableLegTexture.repeat.set(1, 1);
-tableLegTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-const tableLegMaterial = new THREE.MeshStandardMaterial({
-    map: tableLegTexture,
-});
-
 let tableLeg1 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg1 = new THREE.Mesh(tableLeg1, tableLegMaterial);
+tableLeg1 = new THREE.Mesh(tableLeg1, tableMaterial);
 tableLeg1.position.set(-11.5, -5, 6.5);
 tableLeg1.castShadow = true;
 tableTop.add(tableLeg1);
 
 let tableLeg2 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg2 = new THREE.Mesh(tableLeg2, tableLegMaterial);
+tableLeg2 = new THREE.Mesh(tableLeg2, tableMaterial);
 tableLeg2.position.set(11.5, -5, 6.5);
 tableLeg2.castShadow = true;
 tableTop.add(tableLeg2);
 
 let tableLeg3 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg3 = new THREE.Mesh(tableLeg3, tableLegMaterial);
+tableLeg3 = new THREE.Mesh(tableLeg3, tableMaterial);
 tableLeg3.position.set(-11.5, -5, -6.5);
 tableLeg3.castShadow = true;
 tableTop.add(tableLeg3);
 
 
 let tableLeg4 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg4 = new THREE.Mesh(tableLeg4, tableLegMaterial);
+tableLeg4 = new THREE.Mesh(tableLeg4, tableMaterial);
 tableLeg4.position.set(11.5, -5, -6.5);
 tableLeg4.castShadow = true;
 tableTop.add(tableLeg4);
 
 let tableLeg5 = new THREE.BoxGeometry(0.8, 0.6, 12.5);
-tableLeg5 = new THREE.Mesh(tableLeg5, tableLegMaterial);
+tableLeg5 = new THREE.Mesh(tableLeg5, tableMaterial);
 tableLeg5.position.set(11.5, -8, 0);
 tableLeg5.castShadow = true;
 tableTop.add(tableLeg5);
 
 let tableLeg6 = new THREE.BoxGeometry(0.8, 0.6, 12.5);
-tableLeg6 = new THREE.Mesh(tableLeg6, tableLegMaterial);
+tableLeg6 = new THREE.Mesh(tableLeg6, tableMaterial);
 tableLeg6.position.set(-11.5, -8, 0);
 tableLeg6.castShadow = true;
 tableTop.add(tableLeg6);
 
 let tableLeg7 = new THREE.BoxGeometry(23, 0.59, 0.8);
-tableLeg7 = new THREE.Mesh(tableLeg7, tableLegMaterial);
+tableLeg7 = new THREE.Mesh(tableLeg7, tableMaterial);
 tableLeg7.position.set(0, -8, 0);
 tableLeg7.castShadow = true;
 tableTop.add(tableLeg7);
+
+// -------- Table book shelf---------------
+let bookShelfLeft = new THREE.BoxGeometry(0.59, 8, 5);
+bookShelfLeft = new THREE.Mesh(bookShelfLeft, tableMaterial);
+bookShelfLeft.position.set(-11.69, 4, -4.48);
+bookShelfLeft.castShadow = true;
+tableTop.add(bookShelfLeft);
+
+let bookShelfRight = new THREE.BoxGeometry(0.59, 8, 5);
+bookShelfRight = new THREE.Mesh(bookShelfRight, tableMaterial);
+bookShelfRight.position.set(11.69, 4, -4.48);
+bookShelfRight.castShadow = true;
+tableTop.add(bookShelfRight);
+
+let bookShelfTop = new THREE.BoxGeometry(24, 0.59, 5.02);
+bookShelfTop = new THREE.Mesh(bookShelfTop, tableMaterial);
+bookShelfTop.position.set(0, 8, -4.49);
+bookShelfTop.castShadow = true;
+tableTop.add(bookShelfTop);
+
+
+let bookShelfMiddle = new THREE.BoxGeometry(23, 0.59, 4.99);
+bookShelfMiddle = new THREE.Mesh(bookShelfMiddle, tableMaterial);
+bookShelfMiddle.position.set(0, 4, -4.49);
+bookShelfMiddle.castShadow = true;
+tableTop.add(bookShelfMiddle);
+
+let bookShelfVerticalMiddle = new THREE.BoxGeometry(0.59, 8, 5);
+bookShelfVerticalMiddle = new THREE.Mesh(bookShelfVerticalMiddle, tableMaterial);
+bookShelfVerticalMiddle.position.set(0, 4, -4.48);
+bookShelfVerticalMiddle.castShadow = true;
+tableTop.add(bookShelfVerticalMiddle);
+
+
+let bookShelfBack = new THREE.BoxGeometry(24, 8, 0.4);
+bookShelfBack = new THREE.Mesh(bookShelfBack, tableMaterial);
+bookShelfBack.position.set(0, 4, -6.79);
+bookShelfBack.castShadow = true;
+tableTop.add(bookShelfBack);
 
 
 
@@ -202,44 +232,7 @@ chairTop.add(chairLegSupport2);
 
 
 
-// -------- Book shelf---------------
-let bookShelfLeft = new THREE.BoxGeometry(0.59, 8, 5);
-bookShelfLeft = new THREE.Mesh(bookShelfLeft, tableTopMaterial);
-bookShelfLeft.position.set(-11.69, 4, -4.48);
-bookShelfLeft.castShadow = true;
-tableTop.add(bookShelfLeft);
 
-let bookShelfRight = new THREE.BoxGeometry(0.59, 8, 5);
-bookShelfRight = new THREE.Mesh(bookShelfRight, tableTopMaterial);
-bookShelfRight.position.set(11.69, 4, -4.48);
-bookShelfRight.castShadow = true;
-tableTop.add(bookShelfRight);
-
-let bookShelfTop = new THREE.BoxGeometry(24, 0.59, 5.02);
-bookShelfTop = new THREE.Mesh(bookShelfTop, tableTopMaterial);
-bookShelfTop.position.set(0, 8, -4.49);
-bookShelfTop.castShadow = true;
-tableTop.add(bookShelfTop);
-
-
-let bookShelfMiddle = new THREE.BoxGeometry(23, 0.59, 4.99);
-bookShelfMiddle = new THREE.Mesh(bookShelfMiddle, tableTopMaterial);
-bookShelfMiddle.position.set(0, 4, -4.49);
-bookShelfMiddle.castShadow = true;
-tableTop.add(bookShelfMiddle);
-
-let bookShelfVerticalMiddle = new THREE.BoxGeometry(0.59, 8, 5);
-bookShelfVerticalMiddle = new THREE.Mesh(bookShelfVerticalMiddle, tableTopMaterial);
-bookShelfVerticalMiddle.position.set(0, 4, -4.48);
-bookShelfVerticalMiddle.castShadow = true;
-tableTop.add(bookShelfVerticalMiddle);
-
-
-let bookShelfBack = new THREE.BoxGeometry(24, 8, 0.4);
-bookShelfBack = new THREE.Mesh(bookShelfBack, tableTopMaterial);
-bookShelfBack.position.set(0, 4, -6.79);
-bookShelfBack.castShadow = true;
-tableTop.add(bookShelfBack);
 
 // -----------------Camera----------------
 let cameraRotationVar = 0.3;
@@ -323,7 +316,6 @@ function checkKey(e) {
             cameraPositionY = 20;
         }
         moveCamera();
-
     }
     else if (e.keyCode == '37') {
         // left arrow
@@ -335,7 +327,6 @@ function checkKey(e) {
         // right arrow
         cameraRotationVar -= 0.03;
         moveCamera();
-
     }
 }
 
@@ -352,7 +343,5 @@ addEventListener('click', (event) => {
     tableTexture.repeat.set(1, 1);
     tableTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     
-    tableTopMaterial.map = tableTexture;
-
-    tableLegMaterial.map = tableTexture;
+    tableMaterial.map = tableTexture;
 });
