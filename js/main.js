@@ -6,14 +6,22 @@ window.onload = function () {
   scene.background = new THREE.TextureLoader().load("../textures/bg.png");
 
   //Camera
-
+  let cameraRotationVar = 0.3;
+  let cameraPositionY = 30;
   const camera = new THREE.PerspectiveCamera(
-    45,
+    60,
     window.innerWidth / window.innerHeight,
-    0.1,
-    1000
+    1,
+    400
   );
-  camera.position.set(0, 50, 50);
+
+  camera.position.set(
+    Math.sin(cameraRotationVar) * 40,
+    cameraPositionY,
+    Math.cos(cameraRotationVar) * 40
+  );
+  camera.lookAt(0, 5, 5);
+  scene.add(camera);
 
   //Renderer
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -29,7 +37,7 @@ window.onload = function () {
   scene.add(light);
 
   //Axes Helper(The X axis is red. The Y axis is green. The Z axis is blue)
-  scene.add(new THREE.AxesHelper(3));
+  // scene.add(new THREE.AxesHelper(3));
 
   //Plane - Floor
   const floorTexture = new THREE.TextureLoader().load("textures/floor2.jpg");
@@ -43,6 +51,45 @@ window.onload = function () {
   plane.receiveShadow = true;
   scene.add(plane);
 
+  var wallObj = new THREE.Object3D();
+
+  function showWall() {
+    //-----------------------------Wall Section---------------------------------//
+    //Wall
+    const wall = new THREE.BoxGeometry(30, 1, 50);
+    let wallTexture = new THREE.TextureLoader().load("textures/wall1.jpg");
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      map: wallTexture,
+      side: THREE.DoubleSide,
+    });
+    //Wall-Right
+    const wallRightPlane = new THREE.Mesh(wall, wallMaterial);
+    wallRightPlane.position.set(25, 15, 0);
+    wallRightPlane.rotation.z = THREE.MathUtils.degToRad(90);
+    wallRightPlane.castShadow = true;
+    wallObj.add(wallRightPlane);
+
+    //Wall-Left
+    const wallLeftPlane = new THREE.Mesh(wall, wallMaterial);
+    wallLeftPlane.position.set(-25, 15, 0);
+    wallLeftPlane.rotation.z = THREE.MathUtils.degToRad(90);
+    wallLeftPlane.castShadow = true;
+    wallObj.add(wallLeftPlane);
+
+    //Wall-Back
+    const wallBack = new THREE.BoxGeometry(30, 1, 51);
+    const wallBackPlane = new THREE.Mesh(wallBack, wallMaterial);
+    wallBackPlane.position.set(0, 15, -25);
+    wallBackPlane.rotation.x = THREE.MathUtils.degToRad(90);
+    wallBackPlane.rotation.y = THREE.MathUtils.degToRad(90);
+    wallBackPlane.castShadow = true;
+    wallObj.add(wallBackPlane);
+
+    scene.add(wallObj);
+  }
+
+  // showWall();
+
   // Mirror
   //   const geometry = new THREE.PlaneGeometry(5, 10);
   //   const groundMirror = new Reflector(geometry, {
@@ -55,41 +102,15 @@ window.onload = function () {
   //   groundMirror.rotateZ(-Math.PI + 0.031);
   //   scene.add(groundMirror);
 
-  //-----------------------------Wall Section---------------------------------//
-  //Wall
-  const wall = new THREE.BoxGeometry(30, 1, 50);
-  let wallTexture = new THREE.TextureLoader().load("textures/wall1.jpg");
-  const wallMaterial = new THREE.MeshStandardMaterial({
-    map: wallTexture,
-    side: THREE.DoubleSide,
-  });
-  //Wall-Right
-  const wallRightPlane = new THREE.Mesh(wall, wallMaterial);
-  wallRightPlane.position.set(25, 15, 0);
-  wallRightPlane.rotation.z = THREE.MathUtils.degToRad(90);
-  wallRightPlane.castShadow = true;
-  scene.add(wallRightPlane);
-
-  //Wall-Left
-  const wallLeftPlane = new THREE.Mesh(wall, wallMaterial);
-  wallLeftPlane.position.set(-25, 15, 0);
-  wallLeftPlane.rotation.z = THREE.MathUtils.degToRad(90);
-  wallLeftPlane.castShadow = true;
-  scene.add(wallLeftPlane);
-
-  //Wall-Back
-  const wallBack = new THREE.BoxGeometry(30, 1, 51);
-  const wallBackPlane = new THREE.Mesh(wallBack, wallMaterial);
-  wallBackPlane.position.set(0, 15, -25);
-  wallBackPlane.rotation.x = THREE.MathUtils.degToRad(90);
-  wallBackPlane.rotation.y = THREE.MathUtils.degToRad(90);
-  wallBackPlane.castShadow = true;
-  scene.add(wallBackPlane);
-
   //-----------------------------Table Section----------------------------//
   //Table top
-  const tableTextures = ["textures/table-top1.jpg", "textures/table-top2.jpg"];
-  let tableTextureNo = 1;
+  const tableTextures = [
+    "textures/table-top1.jpg",
+    "textures/table-top2.jpg",
+    "textures/table-top3.jpg",
+    "textures/table-top4.jpg",
+  ];
+  let tableTextureNo = 0;
   let tableTexture = new THREE.TextureLoader().load(
     tableTextures[tableTextureNo]
   );
@@ -103,17 +124,14 @@ window.onload = function () {
 
   let tableTop = new THREE.BoxGeometry(24, 0.4, 12);
   tableTop = new THREE.Mesh(tableTop, tableTopMaterial);
-  tableTop.position.set(-18, 10, 0);
+  tableTop.position.set(-10, 10.3, 0);
   tableTop.rotation.y = THREE.MathUtils.degToRad(90);
   tableTop.castShadow = true;
   scene.add(tableTop);
 
   //Table Support-1
-  const tableSupportTextures = [
-    "textures/table-support1.jpg",
-    "textures/table-support2.jpg",
-  ];
-  let tableSupportTextureNo = 1;
+  const tableSupportTextures = ["textures/table-support1.jpg"];
+  let tableSupportTextureNo = 0;
   let tableSupportTexture = new THREE.TextureLoader().load(
     tableSupportTextures[tableSupportTextureNo]
   );
@@ -125,136 +143,221 @@ window.onload = function () {
     map: tableSupportTexture,
   });
 
+  function createTableSupport(posX, posY, posZ, len, rotX = false) {
+    let tableSupport = new THREE.BoxGeometry(0.6, len, 0.6);
+    tableSupport = new THREE.Mesh(tableSupport, tableSupportMaterial);
+    tableSupport.position.set(posX, posY, posZ);
+    tableSupport.castShadow = true;
+    if (rotX == true) tableSupport.rotation.x = THREE.MathUtils.degToRad(90);
+
+    return tableSupport;
+  }
+  //Support-1
+  tableTop.add(createTableSupport(-11, -5, 5, 10));
+
+  //Support-2
+  tableTop.add(createTableSupport(-11, -5, -5, 10));
+
+  //Support-3
+  tableTop.add(createTableSupport(11, -5, 5, 10));
+
+  //Support-4
+  tableTop.add(createTableSupport(11, -5, -5, 10));
+
+  //Support-5
+  tableTop.add(createTableSupport(-11, -5, 0, 10, true));
+
+  //Support-6
+  tableTop.add(createTableSupport(-11, -10, 0, 10.6, true));
+
+  //Support-7
+  tableTop.add(createTableSupport(11, -5, 0, 10, true));
+
+  //Support-8
+  tableTop.add(createTableSupport(11, -10, 0, 10.6, true));
+
   const gui = new dat.GUI();
   const options = {
+    isShowWall: false,
     x: 0,
-    y: 0,
-    z: 0,
+    y: 5,
+    z: -2,
   };
 
-  let tableSupport1 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport1 = new THREE.Mesh(tableSupport1, tableSupportMaterial);
-  tableSupport1.position.set(-13, 5, 11);
-  tableSupport1.castShadow = true;
-  scene.add(tableSupport1);
+  //Chair
+  const seatShape = new THREE.Shape();
+  seatShape.moveTo(0, 0);
 
-  let tableSupport2 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport2 = new THREE.Mesh(tableSupport2, tableSupportMaterial);
-  tableSupport2.position.set(-23, 5, 11);
-  tableSupport2.castShadow = true;
-  scene.add(tableSupport2);
+  seatShape.lineTo(-2, 6);
+  seatShape.lineTo(6, 6);
+  seatShape.lineTo(4, 0);
 
-  let tableSupport3 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport3 = new THREE.Mesh(tableSupport3, tableSupportMaterial);
-  tableSupport3.position.set(-13, 5, -11);
-  tableSupport3.castShadow = true;
-  scene.add(tableSupport3);
+  const extrudeSettings = {
+    steps: 6,
+    depth: 0.2,
+    bevelEnabled: true,
+    bevelThickness: 0.3,
+    bevelSize: 0.1,
+    bevelOffset: 1,
+    bevelSegments: 5,
+  };
 
-  let tableSupport4 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport4 = new THREE.Mesh(tableSupport4, tableSupportMaterial);
-  tableSupport4.position.set(-23, 5, -11);
-  tableSupport4.castShadow = true;
-  scene.add(tableSupport4);
+  const geometry = new THREE.ExtrudeGeometry(seatShape, extrudeSettings);
+  var chairSeatTexture = new THREE.TextureLoader().load(
+    "../textures/chair-top4.jpg"
+  );
+  chairSeatTexture.wrapS = THREE.RepeatWrapping;
+  chairSeatTexture.wrapT = THREE.RepeatWrapping;
+  chairSeatTexture.repeat.set(1, 1);
+  chairSeatTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const chairSeatMaterial = new THREE.MeshStandardMaterial({
+    map: chairSeatTexture,
+  });
+  const seatPlane = new THREE.Mesh(geometry, chairSeatMaterial);
+  seatPlane.position.set(0, 7, -2);
+  seatPlane.rotation.x = THREE.MathUtils.degToRad(90);
+  seatPlane.rotation.z = THREE.MathUtils.degToRad(90);
+  seatPlane.castShadow = true;
+  scene.add(seatPlane);
 
-  let tableSupport5 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport5 = new THREE.Mesh(tableSupport5, tableSupportMaterial);
-  tableSupport5.position.set(-18.2, 5.5, 10.95);
-  tableSupport5.rotation.z = THREE.MathUtils.degToRad(90);
-  tableSupport5.castShadow = true;
-  scene.add(tableSupport5);
+  function createChairSupport(posX, posY, posZ, angle) {
+    var chairSupport = new THREE.CylinderGeometry(0.3, 0.3, 7, 36);
+    const chairSupportMat = tableSupportMaterial;
+    chairSupport = new THREE.Mesh(chairSupport, chairSupportMat);
+    chairSupport.position.set(posX, posY, posZ);
+    chairSupport.rotation.x = THREE.MathUtils.degToRad(angle);
+    chairSupport.castShadow = true;
+    return chairSupport;
+  }
 
-  let tableSupport6 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport6 = new THREE.Mesh(tableSupport6, tableSupportMaterial);
-  tableSupport6.position.set(-18.2, 0.3, 10.95);
-  tableSupport6.rotation.z = THREE.MathUtils.degToRad(90);
-  tableSupport6.castShadow = true;
-  scene.add(tableSupport6);
+  //Chair support-1
+  seatPlane.add(createChairSupport(4.6, 0, 3.6, -85));
 
-  let tableSupport7 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport7 = new THREE.Mesh(tableSupport7, tableSupportMaterial);
-  tableSupport7.position.set(-18.2, 5.5, -10.95);
-  tableSupport7.rotation.z = THREE.MathUtils.degToRad(90);
-  tableSupport7.castShadow = true;
-  scene.add(tableSupport7);
+  //Chair support-2
+  seatPlane.add(createChairSupport(-0.6, 0, 3.6, -85));
 
-  let tableSupport8 = new THREE.BoxGeometry(0.6, 10, 0.6);
-  tableSupport8 = new THREE.Mesh(tableSupport8, tableSupportMaterial);
-  tableSupport8.position.set(-18.2, 0.3, -10.95);
-  tableSupport8.rotation.z = THREE.MathUtils.degToRad(90);
-  tableSupport8.castShadow = true;
-  scene.add(tableSupport8);
+  //Chair support-3
+  seatPlane.add(createChairSupport(6, 6, 3.6, -97));
 
-  //   gui.add(options, "x", -50, 50);
-  //   gui.add(options, "y", -50, 50);
-  //   gui.add(options, "z", -50, 50);
+  //Chair support-4
+  seatPlane.add(createChairSupport(-2, 6, 3.6, -97));
+
+  var chairBackSupport1 = new THREE.BoxGeometry(5.7, 0.3, 8);
+  chairBackSupport1 = new THREE.Mesh(chairBackSupport1, chairSeatMaterial);
+  chairBackSupport1.position.set(2, -0.6, -4);
+  chairBackSupport1.castShadow = true;
+  chairBackSupport1.rotation.x = THREE.MathUtils.degToRad(-5);
+  seatPlane.add(chairBackSupport1);
+
+  gui.add(options, "isShowWall").onChange(function (input) {
+    options.isShowWall = input;
+    if (options.isShowWall == true) {
+      showWall();
+    } else {
+      scene.remove(wallObj);
+    }
+  });
+  // gui.add(options, "x", -100, 100);
+  // gui.add(options, "y", -100, 100);
+  // gui.add(options, "z", -100, 100);
 
   //Grid Helper
-  const gridHelper = new THREE.GridHelper(30);
-  scene.add(gridHelper);
+  // const gridHelper = new THREE.GridHelper(30);
+  // scene.add(gridHelper);
 
   // ---------------Light----------------
-  const pointLight = new THREE.PointLight(0xffffff, 1, 250);
-  pointLight.castShadow = true; // default false
+
+  const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+  pointLight.castShadow = true;
   pointLight.shadow.mapSize.width = 1024;
   pointLight.shadow.mapSize.height = 1024;
+  pointLight.position.set(-39, 39, 4);
   scene.add(pointLight);
 
-  const ambientLight = new THREE.AmbientLightProbe(0xffffff, 0.4);
-  ambientLight.position.set(40, 80, 0);
-  scene.add(ambientLight);
+  // const sphereSize = 5;
+  // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+  // scene.add(pointLightHelper);
+
+  // const ambientLight = new THREE.AmbientLightProbe(0xffffff, 0.5);
+  // ambientLight.position.set(0, 0, 0);
+  // scene.add(ambientLight);
 
   function animate() {
     requestAnimationFrame(animate);
-
+    // seatPlane.position.set(options.x, options.y, options.z);
     renderer.render(scene, camera);
   }
   animate();
 
+  var clock = new THREE.Clock();
   function lightMove() {
     const time = clock.getElapsedTime();
-    pointLight.position.x = Math.sin(time) * 80;
-    pointLight.position.y = 60;
-    pointLight.position.z = Math.cos(time) * 80;
+    pointLight.position.x = Math.sin(time) * -39;
+    pointLight.position.y = 39;
+    pointLight.position.z = Math.cos(time) * 4;
     requestAnimationFrame(lightMove);
   }
 
   lightMove();
 
   function moveCamera() {
-    camera.position.x = Math.sin(cameraRotationVar) * 27;
+    camera.position.x = Math.sin(cameraRotationVar) * 40;
     camera.position.y = cameraPositionY;
-    camera.position.z = Math.cos(cameraRotationVar) * 27;
+    camera.position.z = Math.cos(cameraRotationVar) * 40;
     camera.lookAt(0, 5, 0);
     renderer.render(scene, camera);
   }
 
-  document.onkeydown = checkKey;
+  function keyPressEventHandle() {
+    document.onkeyup = function (event) {
+      switch (event.key) {
+        case "ArrowUp":
+          cameraPositionY += 1;
+          if (cameraPositionY > 50) {
+            cameraPositionY = 50;
+          }
+          moveCamera();
+          break;
+        case "ArrowDown":
+          cameraPositionY -= 1;
+          if (cameraPositionY < 20) {
+            cameraPositionY = 20;
+          }
+          moveCamera();
+          break;
 
-  function checkKey(e) {
-    if (e.keyCode == "38") {
-      // up key
-      cameraPositionY += 1;
-      if (cameraPositionY > 50) {
-        cameraPositionY = 50;
+        case "ArrowLeft":
+          cameraRotationVar += 0.03;
+          moveCamera();
+          break;
+
+        case "ArrowRight":
+          cameraRotationVar -= 0.03;
+          moveCamera();
+          break;
       }
-      moveCamera();
-    } else if (e.keyCode == "40") {
-      // down arrow
-      cameraPositionY -= 1;
-      if (cameraPositionY < 20) {
-        cameraPositionY = 20;
-      }
-      moveCamera();
-    } else if (e.keyCode == "37") {
-      // left arrow
-      cameraRotationVar += 0.03;
-      moveCamera();
-    } else if (e.keyCode == "39") {
-      // right arrow
-      cameraRotationVar -= 0.03;
-      moveCamera();
-    }
+    };
   }
+
+  keyPressEventHandle();
+
+  function mouseClickEventHandle() {
+    addEventListener("click", (event) => {
+      tableTextureNo = (tableTextureNo + 1) % tableTextures.length;
+      console.log(tableTextureNo);
+      tableTexture.dispose();
+      tableTexture = new THREE.TextureLoader().load(
+        tableTextures[tableTextureNo]
+      );
+      tableTexture.wrapS = THREE.RepeatWrapping;
+      tableTexture.wrapT = THREE.RepeatWrapping;
+      tableTexture.repeat.set(1, 1);
+      tableTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tableTopMaterial.map = tableTexture;
+    });
+  }
+
+  mouseClickEventHandle();
 
   window.addEventListener("resize", function () {
     camera.aspect = window.innerWidth / window.innerHeight;
