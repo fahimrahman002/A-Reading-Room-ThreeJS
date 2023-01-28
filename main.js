@@ -27,8 +27,8 @@ scene.add(ambientLight);
 
 
 // ----------Axis helper--------------
-const axesHelper = new THREE.AxesHelper(30);
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(30);
+// scene.add(axesHelper);
 
 //----------------Floor------------------
 const tilesTexture = new THREE.TextureLoader().load("textures/new tiles.jpg");
@@ -71,48 +71,49 @@ scene.add(tableTop);
 
 
 // // -------Table Legs--------
-let tableLeg1 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg1 = new THREE.Mesh(tableLeg1, tableMaterial);
-tableLeg1.position.set(-11.5, -5, 6.5);
-tableLeg1.castShadow = true;
-tableTop.add(tableLeg1);
-
-let tableLeg2 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg2 = new THREE.Mesh(tableLeg2, tableMaterial);
-tableLeg2.position.set(11.5, -5, 6.5);
-tableLeg2.castShadow = true;
-tableTop.add(tableLeg2);
-
-let tableLeg3 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg3 = new THREE.Mesh(tableLeg3, tableMaterial);
-tableLeg3.position.set(-11.5, -5, -6.5);
-tableLeg3.castShadow = true;
-tableTop.add(tableLeg3);
+let tableBottomRight = new THREE.BoxGeometry(0.6, 10, 13.9);
+tableBottomRight = new THREE.Mesh(tableBottomRight, tableMaterial);
+tableBottomRight.position.set(11.7, -5, 0);
+tableBottomRight.castShadow = true;
+tableTop.add(tableBottomRight);
 
 
-let tableLeg4 = new THREE.BoxGeometry(0.8, 10, 0.8);
-tableLeg4 = new THREE.Mesh(tableLeg4, tableMaterial);
-tableLeg4.position.set(11.5, -5, -6.5);
-tableLeg4.castShadow = true;
-tableTop.add(tableLeg4);
+let tableBottomLeft = new THREE.BoxGeometry(0.6, 10, 13.98);
+tableBottomLeft = new THREE.Mesh(tableBottomLeft, tableMaterial);
+tableBottomLeft.position.set(-11.7, -5, 0);
+tableBottomLeft.castShadow = true;
+tableTop.add(tableBottomLeft);
 
-let tableLeg5 = new THREE.BoxGeometry(0.8, 0.6, 12.5);
-tableLeg5 = new THREE.Mesh(tableLeg5, tableMaterial);
-tableLeg5.position.set(11.5, -8, 0);
-tableLeg5.castShadow = true;
-tableTop.add(tableLeg5);
+let tableBottomLeft1 = new THREE.BoxGeometry(0.6, 10, 13.98);
+tableBottomLeft1 = new THREE.Mesh(tableBottomLeft1, tableMaterial);
+tableBottomLeft1.position.set(-4, -5, 0);
+tableBottomLeft1.castShadow = true;
+tableTop.add(tableBottomLeft1);
 
-let tableLeg6 = new THREE.BoxGeometry(0.8, 0.6, 12.5);
-tableLeg6 = new THREE.Mesh(tableLeg6, tableMaterial);
-tableLeg6.position.set(-11.5, -8, 0);
-tableLeg6.castShadow = true;
-tableTop.add(tableLeg6);
+let tableBottomLeftBottom1 = new THREE.BoxGeometry(7.5, 0.6, 13.97);
+tableBottomLeftBottom1 = new THREE.Mesh(tableBottomLeftBottom1, tableMaterial);
+tableBottomLeftBottom1.position.set(-7.85, -9.7, 0);
+tableBottomLeftBottom1.castShadow = true;
+tableTop.add(tableBottomLeftBottom1);
 
-let tableLeg7 = new THREE.BoxGeometry(23, 0.59, 0.8);
-tableLeg7 = new THREE.Mesh(tableLeg7, tableMaterial);
-tableLeg7.position.set(0, -8, 0);
-tableLeg7.castShadow = true;
-tableTop.add(tableLeg7);
+let tableBottomLeftBottom2 = new THREE.BoxGeometry(7.5, 0.6, 13.97);
+tableBottomLeftBottom2 = new THREE.Mesh(tableBottomLeftBottom2, tableMaterial);
+tableBottomLeftBottom2.position.set(-7.85, -4.5, 0);
+tableBottomLeftBottom2.castShadow = true;
+tableTop.add(tableBottomLeftBottom2);
+
+let tableBottomLeftBack = new THREE.BoxGeometry(7.5, 10, 0.6);
+tableBottomLeftBack = new THREE.Mesh(tableBottomLeftBack, tableMaterial);
+tableBottomLeftBack.position.set(-7.9, -5, -6.72);
+tableBottomLeftBack.castShadow = true;
+tableTop.add(tableBottomLeftBack);
+
+let tableFootKeeper = new THREE.BoxGeometry(15.5, 0.25, 1.5);
+tableFootKeeper = new THREE.Mesh(tableFootKeeper, tableMaterial);
+tableFootKeeper.position.set(4, -8, 2); //4
+tableFootKeeper.rotation.x = -6;
+tableFootKeeper.castShadow = true;
+tableTop.add(tableFootKeeper);
 
 // -------- Table book shelf---------------
 let bookShelfLeft = new THREE.BoxGeometry(0.59, 8, 5);
@@ -168,7 +169,7 @@ const chairMaterial = new THREE.MeshStandardMaterial({
 
 let chairTop = new THREE.BoxGeometry(6, 0.5, 6);
 chairTop = new THREE.Mesh(chairTop, chairMaterial);
-chairTop.position.set(0, 6, 13);
+chairTop.position.set(3, 6, 11.5);
 chairTop.castShadow = true;
 scene.add(chairTop);
 
@@ -244,7 +245,7 @@ camera.position.z = Math.cos(cameraRotationVar) * 27;
 camera.lookAt(0, 5, 0);
 scene.add(camera);
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
+// const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
@@ -342,6 +343,6 @@ addEventListener('click', (event) => {
     tableTexture.wrapT = THREE.RepeatWrapping;
     tableTexture.repeat.set(1, 1);
     tableTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    
+
     tableMaterial.map = tableTexture;
 });
