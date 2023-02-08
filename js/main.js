@@ -239,7 +239,7 @@ const loop = () => {
 loop();
 
 
-clock = new THREE.Clock();
+var clock = new THREE.Clock();
 
 function lightMove() {
 
