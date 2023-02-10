@@ -277,6 +277,45 @@ chairBackSupport1.rotation.x = THREE.MathUtils.degToRad(-5);
 seatPlane.add(chairBackSupport1);
 
 
+// --------------- Show piece ------------
+let vertexShaderShowPiece =
+  `varying vec3 v_color;
+ void main()	{
+     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+     v_color = position;
+ }`
+
+let fragmantShaderShowPiece =
+  `uniform float u_time;
+ varying vec3 v_color;
+ void main()	{
+     gl_FragColor = vec4(abs(cos(v_color+u_time)), 1.0);
+ }`
+
+let showpiece = new THREE.DodecahedronGeometry(0.8, 10);
+var start = Date.now();
+let suniforms = {
+  u_time: { type: "f", value: (Date.now() - start) / 1000 }
+};
+
+let showPieceMaterial = new THREE.ShaderMaterial({
+  uniforms: suniforms,
+  vertexShader: vertexShaderShowPiece,
+  fragmentShader: fragmantShaderShowPiece
+});
+
+showpiece = new THREE.Mesh(showpiece, showPieceMaterial);
+showpiece.position.set(0, 10, -4);
+showpiece.castShadow = true
+tableTop.add(showpiece);
+
+
+let cone = new THREE.ConeGeometry(0.7, 1, 100);
+cone = new THREE.Mesh(cone, tableMaterial);
+cone.position.set(0, 8.7, -4);
+cone.castShadow = true;
+tableTop.add(cone);
+
 // -----------------Camera----------------
 let cameraRotationVar = 0.3;
 let cameraPositionY = 30;
@@ -312,6 +351,7 @@ window.addEventListener("resize", () => {
 
 const loop = () => {
   renderer.render(scene, camera);
+
   requestAnimationFrame(loop);
 };
 
@@ -325,6 +365,8 @@ function lightMove() {
   pointLight.position.x = Math.sin(time) * 80;
   pointLight.position.y = 60;
   pointLight.position.z = Math.cos(time) * 80;
+
+  suniforms["u_time"].value = (Date.now() - start) / 1000;
 
   requestAnimationFrame(lightMove);
 }
