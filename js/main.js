@@ -25,8 +25,8 @@ ambientLight.position.set(40, 80, 4);
 scene.add(ambientLight);
 
 // ----------Axis helper--------------
-// const axesHelper = new THREE.AxesHelper(30);
-// scene.add(axesHelper);
+const axesHelper = new THREE.AxesHelper(30);
+scene.add(axesHelper);
 
 //----------------Floor------------------
 const tilesTexture = new THREE.TextureLoader().load("textures/new tiles.jpg");
@@ -116,27 +116,60 @@ tableFootKeeper.rotation.x = -6;
 tableFootKeeper.castShadow = true;
 tableTop.add(tableFootKeeper);
 
-// -------- Table book shelf---------------
+
+
+// -------------------Table book shelf------------------
+let vertexShaderBookShelf =
+  `varying vec2 texcoord;
+   void main()
+   {
+       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+       texcoord  = uv;
+   }`
+
+let fragmentShaderBookShelf =
+  `varying vec2 texcoord;
+   uniform sampler2D u_texture;
+   void main()
+   {
+       gl_FragColor = texture2D(u_texture, texcoord);
+   }`
+
+let uniforms = {
+  u_texture: {
+    type: "t", value: tableTexture
+  }
+};
+
+let bookShelfMaterial = new THREE.ShaderMaterial({
+  uniforms: uniforms,
+  vertexShader: vertexShaderBookShelf,
+  fragmentShader: fragmentShaderBookShelf
+});
+
+
 let bookShelfLeft = new THREE.BoxGeometry(0.59, 8, 5);
-bookShelfLeft = new THREE.Mesh(bookShelfLeft, tableMaterial);
+bookShelfLeft = new THREE.Mesh(bookShelfLeft, bookShelfMaterial);
 bookShelfLeft.position.set(-11.69, 4, -4.48);
 bookShelfLeft.castShadow = true;
 tableTop.add(bookShelfLeft);
 
+
+// -------- Table book shelf---------------
 let bookShelfRight = new THREE.BoxGeometry(0.59, 8, 5);
-bookShelfRight = new THREE.Mesh(bookShelfRight, tableMaterial);
+bookShelfRight = new THREE.Mesh(bookShelfRight, bookShelfMaterial);
 bookShelfRight.position.set(11.69, 4, -4.48);
 bookShelfRight.castShadow = true;
 tableTop.add(bookShelfRight);
 
 let bookShelfTop = new THREE.BoxGeometry(24, 0.59, 5.02);
-bookShelfTop = new THREE.Mesh(bookShelfTop, tableMaterial);
+bookShelfTop = new THREE.Mesh(bookShelfTop, bookShelfMaterial);
 bookShelfTop.position.set(0, 8, -4.49);
 bookShelfTop.castShadow = true;
 tableTop.add(bookShelfTop);
 
 let bookShelfMiddle = new THREE.BoxGeometry(23, 0.59, 4.99);
-bookShelfMiddle = new THREE.Mesh(bookShelfMiddle, tableMaterial);
+bookShelfMiddle = new THREE.Mesh(bookShelfMiddle, bookShelfMaterial);
 bookShelfMiddle.position.set(0, 4, -4.49);
 bookShelfMiddle.castShadow = true;
 tableTop.add(bookShelfMiddle);
@@ -144,14 +177,14 @@ tableTop.add(bookShelfMiddle);
 let bookShelfVerticalMiddle = new THREE.BoxGeometry(0.59, 8, 5);
 bookShelfVerticalMiddle = new THREE.Mesh(
   bookShelfVerticalMiddle,
-  tableMaterial
+  bookShelfMaterial
 );
 bookShelfVerticalMiddle.position.set(0, 4, -4.48);
 bookShelfVerticalMiddle.castShadow = true;
 tableTop.add(bookShelfVerticalMiddle);
 
 let bookShelfBack = new THREE.BoxGeometry(24, 8, 0.4);
-bookShelfBack = new THREE.Mesh(bookShelfBack, tableMaterial);
+bookShelfBack = new THREE.Mesh(bookShelfBack, bookShelfMaterial);
 bookShelfBack.position.set(0, 4, -6.79);
 bookShelfBack.castShadow = true;
 tableTop.add(bookShelfBack);
@@ -194,7 +227,6 @@ seatPlane.rotation.z = THREE.MathUtils.degToRad(180);
 seatPlane.castShadow = true;
 scene.add(seatPlane);
 
-seatPlane.add(new THREE.AxesHelper(10));
 function createChairSupport(posX, posY, posZ, angle) {
   let chairSupportTexture = new THREE.TextureLoader().load(
     "textures/table-support1.jpg"
@@ -244,78 +276,6 @@ chairBackSupport1.castShadow = true;
 chairBackSupport1.rotation.x = THREE.MathUtils.degToRad(-5);
 seatPlane.add(chairBackSupport1);
 
-// //Chair top
-// let chairTexture = new THREE.TextureLoader().load(tableTextures[2]);
-// chairTexture.wrapS = THREE.RepeatWrapping;
-// chairTexture.wrapT = THREE.RepeatWrapping;
-// chairTexture.repeat.set(1, 1);
-// chairTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-// const chairMaterial = new THREE.MeshStandardMaterial({
-//     map: chairTexture,
-// });
-
-// let chairTop = new THREE.BoxGeometry(6, 0.5, 6);
-// chairTop = new THREE.Mesh(chairTop, chairMaterial);
-// chairTop.position.set(3, 6, 11.5);
-// chairTop.castShadow = true;
-// scene.add(chairTop);
-
-// //Chair legs
-// let chairLeg1 = new THREE.BoxGeometry(0.62, 14, 0.6);
-// chairLeg1 = new THREE.Mesh(chairLeg1, chairMaterial);
-// chairLeg1.position.set(-2.69, 1, 3);
-// chairLeg1.castShadow = true;
-// chairTop.add(chairLeg1);
-
-// let chairLeg2 = new THREE.BoxGeometry(0.62, 14, 0.6);
-// chairLeg2 = new THREE.Mesh(chairLeg2, chairMaterial);
-// chairLeg2.position.set(2.69, 1, 3);
-// chairLeg2.castShadow = true;
-// chairTop.add(chairLeg2);
-
-// let chairLeg3 = new THREE.BoxGeometry(0.6, 6, 0.6);
-// chairLeg3 = new THREE.Mesh(chairLeg3, chairMaterial);
-// chairLeg3.position.set(2.69, -3, -2.69);
-// chairLeg3.castShadow = true;
-// chairTop.add(chairLeg3);
-
-// let chairLeg4 = new THREE.BoxGeometry(0.6, 6, 0.6);
-// chairLeg4 = new THREE.Mesh(chairLeg4, chairMaterial);
-// chairLeg4.position.set(-2.69, -3, -2.69);
-// chairLeg4.castShadow = true;
-// chairTop.add(chairLeg4);
-
-// //Chair back supports
-// let chairBackSupport1 = new THREE.BoxGeometry(5.9, 0.59, 0.59);
-// chairBackSupport1 = new THREE.Mesh(chairBackSupport1, chairMaterial);
-// chairBackSupport1.position.set(0, 7.5, 3);
-// chairBackSupport1.castShadow = true;
-// chairTop.add(chairBackSupport1);
-
-// let chairBackSupport2 = new THREE.BoxGeometry(5.9, 0.59, 0.59);
-// chairBackSupport2 = new THREE.Mesh(chairBackSupport2, chairMaterial);
-// chairBackSupport2.position.set(0, 5.5, 3);
-// chairBackSupport2.castShadow = true;
-// chairTop.add(chairBackSupport2);
-
-// let chairBackSupport3 = new THREE.BoxGeometry(5.9, 0.59, 0.59);
-// chairBackSupport3 = new THREE.Mesh(chairBackSupport3, chairMaterial);
-// chairBackSupport3.position.set(0, 3.5, 3);
-// chairBackSupport3.castShadow = true;
-// chairTop.add(chairBackSupport3);
-
-// // Leg support
-// let chairLegSupport1 = new THREE.BoxGeometry(0.59, 0.59, 5.9);
-// chairLegSupport1 = new THREE.Mesh(chairLegSupport1, chairMaterial);
-// chairLegSupport1.position.set(-2.69, -3.5, 0);
-// chairLegSupport1.castShadow = true;
-// chairTop.add(chairLegSupport1);
-
-// let chairLegSupport2 = new THREE.BoxGeometry(0.59, 0.59, 5.9);
-// chairLegSupport2 = new THREE.Mesh(chairLegSupport2, chairMaterial);
-// chairLegSupport2.position.set(2.69, -3.5, 0);
-// chairLegSupport2.castShadow = true;
-// chairTop.add(chairLegSupport2);
 
 // -----------------Camera----------------
 let cameraRotationVar = 0.3;
@@ -418,6 +378,7 @@ addEventListener("click", (event) => {
   tableTexture.wrapT = THREE.RepeatWrapping;
   tableTexture.repeat.set(1, 1);
   tableTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
   tableMaterial.map = tableTexture;
+  uniforms["u_texture"].value = tableTexture;
+
 });
