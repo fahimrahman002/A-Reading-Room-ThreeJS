@@ -25,8 +25,8 @@ ambientLight.position.set(40, 80, 4);
 scene.add(ambientLight);
 
 // ----------Axis helper--------------
-const axesHelper = new THREE.AxesHelper(30);
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(30);
+// scene.add(axesHelper);
 
 //----------------Floor------------------
 const tilesTexture = new THREE.TextureLoader().load("textures/new tiles.jpg");
@@ -332,8 +332,8 @@ camera.lookAt(0, 5, 0);
 scene.add(camera);
 
 //Orbit controls
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.update();
+// const controls = new THREE.OrbitControls(camera, renderer.domElement);
+// controls.update();
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
