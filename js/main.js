@@ -279,24 +279,27 @@ seatPlane.add(chairBackSupport1);
 
 // --------------- Show piece ------------
 let vertexShaderShowPiece =
-  `varying vec3 v_color;
- void main()	{
+  `varying vec2 globecord;
+   void main()	{
      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-     v_color = position;
- }`
+     globecord = uv;
+   }`
 
-let fragmantShaderShowPiece =
-  `uniform float u_time;
- varying vec3 v_color;
- void main()	{
-     gl_FragColor = vec4(abs(cos(v_color+u_time)), 1.0);
+let fragmantShaderShowPiece = 
+`varying vec2 globecord;
+ uniform sampler2D u_texture_globe;
+ void main()
+ {
+     gl_FragColor = texture2D(u_texture_globe, globecord);
  }`
-
-let showpiece = new THREE.DodecahedronGeometry(0.8, 10);
-var start = Date.now();
+let showpiece = new THREE.DodecahedronGeometry(1.2, 10);
+let earth_texture = new THREE.TextureLoader().load("textures/earth.jpg");
+earth_texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 let suniforms = {
-  u_time: { type: "f", value: (Date.now() - start) / 1000 }
+  u_texture_globe: { type: "t", value: earth_texture }
 };
+
+
 
 let showPieceMaterial = new THREE.ShaderMaterial({
   uniforms: suniforms,
@@ -305,7 +308,7 @@ let showPieceMaterial = new THREE.ShaderMaterial({
 });
 
 showpiece = new THREE.Mesh(showpiece, showPieceMaterial);
-showpiece.position.set(0, 10, -4);
+showpiece.position.set(0, 10.35, -4);
 showpiece.castShadow = true
 tableTop.add(showpiece);
 
@@ -366,7 +369,7 @@ function lightMove() {
   pointLight.position.y = 60;
   pointLight.position.z = Math.cos(time) * 80;
 
-  suniforms["u_time"].value = (Date.now() - start) / 1000;
+  showpiece.rotation.y += 0.01;
 
   requestAnimationFrame(lightMove);
 }
